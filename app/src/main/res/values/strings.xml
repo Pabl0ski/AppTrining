@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">TrainigListApp</string>
+    <string name="app_name">TrainingList</string>
+    <string-array name="level_options">
+        <item>Todos</item>
+        <item>Principiante</item>
+        <item>Intermedio</item>
+        <item>Avanzado</item>
+    </string-array>
 </resources>

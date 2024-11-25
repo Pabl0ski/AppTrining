@@ -1,4 +1,4 @@
-package com.example.traininglist;
+package com.example.trainiglistapp;
 
 public class Exercise {
     private String name;
