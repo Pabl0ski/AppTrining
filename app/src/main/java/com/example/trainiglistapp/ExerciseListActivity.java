@@ -1,6 +1,7 @@
 package com.example.trainiglistapp;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -43,6 +44,19 @@ public class ExerciseListActivity extends AppCompatActivity {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerFilter.setAdapter(spinnerAdapter);
 
+        // Referencia al FloatingActionButton
+        FloatingActionButton fab = findViewById(R.id.fab);
+
+        // Acción al pulsar el FAB
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Cambiar a una nueva actividad para añadir ejercicios
+                Intent intent = new Intent(ExerciseListActivity.this, AddExerciseActivity.class);
+                startActivity(intent);
+            }
+        });
+
         spinnerFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -58,13 +72,7 @@ public class ExerciseListActivity extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton fab = findViewById(R.id.fabAdd);
-        fab.setOnClickListener(view -> {
-            addExercise();
-            Snackbar snackbar = Snackbar.make(view, "Ejercicio añadido", Snackbar.LENGTH_LONG)
-                    .setAction("Deshacer", v -> removeLastExercise());
-            snackbar.show();
-        });
+
     }
 
     @SuppressLint("NotifyDataSetChanged")

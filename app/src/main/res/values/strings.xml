@@ -6,4 +6,5 @@
         <item>Intermedio</item>
         <item>Avanzado</item>
     </string-array>
+    <string name="add_exercise">Añadir ejercicio</string>
 </resources>
