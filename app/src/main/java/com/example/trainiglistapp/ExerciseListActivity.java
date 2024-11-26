@@ -2,23 +2,28 @@ package com.example.trainiglistapp;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class ExerciseListActivity extends AppCompatActivity {
+    private static final int REQUEST_CODE_ADD_EXERCISE = 1; // Código para el intent de añadir ejercicio
     private RecyclerView recyclerView;
     private ExerciseAdapter adapter;
     private List<Exercise> exerciseList, filteredList;
@@ -31,31 +36,34 @@ public class ExerciseListActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        // Inicializar listas de ejercicios
         exerciseList = new ArrayList<>();
         loadInitialExercises();
+        filteredList = new ArrayList<>(exerciseList);
+
+        // Configurar adaptador
+        adapter = new ExerciseAdapter(filteredList);
+        recyclerView.setAdapter(adapter);
+
+        // Cargar ejercicios desde SharedPreferences
+        loadExercisesFromPreferences();
+
+        // Configurar RecyclerView
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         filteredList = new ArrayList<>(exerciseList);
 
         adapter = new ExerciseAdapter(filteredList);
         recyclerView.setAdapter(adapter);
 
+
+        // Configurar Spinner para filtrar por nivel
         Spinner spinnerFilter = findViewById(R.id.spinnerFilter);
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this,
                 R.array.level_options, android.R.layout.simple_spinner_item);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerFilter.setAdapter(spinnerAdapter);
 
-        // Referencia al FloatingActionButton
-        FloatingActionButton fab = findViewById(R.id.fab);
-
-        // Acción al pulsar el FAB
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Cambiar a una nueva actividad para añadir ejercicios
-                Intent intent = new Intent(ExerciseListActivity.this, AddExerciseActivity.class);
-                startActivity(intent);
-            }
-        });
 
         spinnerFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -72,7 +80,19 @@ public class ExerciseListActivity extends AppCompatActivity {
             }
         });
 
+        // Configurar FloatingActionButton para añadir ejercicios
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(view -> {
+            Intent intent = new Intent(ExerciseListActivity.this, AddExerciseActivity.class);
+            startActivityForResult(intent, REQUEST_CODE_ADD_EXERCISE); // Lanzar AddExerciseActivity esperando un resultado
+        });
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Guardar ejercicios en SharedPreferences
+        saveExercisesToPreferences();
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -92,11 +112,35 @@ public class ExerciseListActivity extends AppCompatActivity {
     }
 
     private void loadInitialExercises() {
+        // Cargar algunos ejercicios iniciales
         exerciseList.add(new Exercise("Sentadillas", "Fuerza", "Intermedio"));
         exerciseList.add(new Exercise("Flexiones", "Fuerza", "Principiante"));
         exerciseList.add(new Exercise("Plancha", "Core", "Avanzado"));
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_ADD_EXERCISE && resultCode == RESULT_OK) {
+            if (data != null) {
+                // Obtener los datos del ejercicio creado
+                String name = data.getStringExtra("EXERCISE_NAME");
+                String type = data.getStringExtra("EXERCISE_TYPE");
+                String level = data.getStringExtra("EXERCISE_LEVEL");
+
+                // Añadir el nuevo ejercicio a la lista principal
+                Exercise newExercise = new Exercise(name, type, level);
+                exerciseList.add(newExercise);
+
+                // Actualizar la lista filtrada
+                filteredList.add(newExercise);
+                adapter.notifyDataSetChanged(); // Actualizar la vista
+            }
+        }
+    }
+
+    // Métodos para añadir y eliminar ejercicios (opcional, no usados directamente)
     private void addExercise() {
         exerciseList.add(new Exercise("Nuevo Ejercicio", "Fuerza", "Principiante"));
         adapter.notifyItemInserted(filteredList.size() - 1);
@@ -109,4 +153,34 @@ public class ExerciseListActivity extends AppCompatActivity {
             adapter.notifyItemRemoved(lastIndex);
         }
     }
+
+    // Método para guardar la lista de ejercicios
+    private void saveExercisesToPreferences() {
+        SharedPreferences sharedPreferences = getSharedPreferences("exercise_prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        Gson gson = new Gson();
+        String json = gson.toJson(exerciseList); // Convertir la lista de ejercicios a JSON
+        editor.putString("exercise_list", json);
+        editor.apply(); // Guardar cambios
+    }
+
+    // Método para cargar la lista de ejercicios desde SharedPreferences
+    private void loadExercisesFromPreferences() {
+        SharedPreferences sharedPreferences = getSharedPreferences("exercise_prefs", MODE_PRIVATE);
+        String json = sharedPreferences.getString("exercise_list", null);
+
+        if (json != null) {
+            Gson gson = new Gson();
+            // Aquí usamos TypeToken correctamente para obtener el tipo adecuado
+            TypeToken<List<Exercise>> token = new TypeToken<List<Exercise>>() {};
+            exerciseList = gson.fromJson(json, token.getType());
+        } else {
+            exerciseList = new ArrayList<>(); // Si no hay datos, inicializar la lista vacía
+        }
+    }
+
+
+
 }
+

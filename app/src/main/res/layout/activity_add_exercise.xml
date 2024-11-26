@@ -1,14 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".AddExerciseActivity">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Añadir Ejercicio"
-        android:gravity="center"
-        android:textSize="24sp" />
+    <!-- Campo de texto para el nombre del ejercicio -->
+    <EditText
+        android:id="@+id/etExerciseName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Nombre del ejercicio"
+        android:layout_margin="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Spinner para el tipo de ejercicio -->
+    <Spinner
+        android:id="@+id/spinnerExerciseType"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:entries="@array/exercise_types"
+        app:layout_constraintTop_toBottomOf="@id/etExerciseName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Spinner para el nivel del ejercicio -->
+    <Spinner
+        android:id="@+id/spinnerExerciseLevel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:entries="@array/exercise_levels"
+        app:layout_constraintTop_toBottomOf="@id/spinnerExerciseType"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Botón para guardar el ejercicio -->
+    <Button
+        android:id="@+id/btnSaveExercise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Guardar"
+        app:layout_constraintTop_toBottomOf="@id/spinnerExerciseLevel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,5 +6,18 @@
         <item>Intermedio</item>
         <item>Avanzado</item>
     </string-array>
+    <string-array name="exercise_types">
+        <item>Fuerza</item>
+        <item>Cardio</item>
+        <item>Core</item>
+        <item>Flexibilidad</item>
+    </string-array>
+    <string-array name="exercise_levels">
+        <item>Principiante</item>
+        <item>Intermedio</item>
+        <item>Avanzado</item>
+    </string-array>
     <string name="add_exercise">Añadir ejercicio</string>
+
 </resources>
+
