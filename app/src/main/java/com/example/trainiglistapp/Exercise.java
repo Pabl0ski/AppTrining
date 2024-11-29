@@ -1,4 +1,6 @@
 package com.example.trainiglistapp;
+
+//La clase ejercicio
 public class Exercise {
     private String name;
     private String type;
@@ -23,4 +25,6 @@ public class Exercise {
     public String getLevel() {
         return level;
     }
+
+
 }

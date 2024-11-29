@@ -15,12 +15,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 
+//Este es el codigo de la pagina donde se ven los ejercicios añadidos
 
 public class ExerciseListActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_ADD_EXERCISE = 1; // Código para el intent de añadir ejercicio
@@ -85,6 +87,32 @@ public class ExerciseListActivity extends AppCompatActivity {
         fab.setOnClickListener(view -> {
             Intent intent = new Intent(ExerciseListActivity.this, AddExerciseActivity.class);
             startActivityForResult(intent, REQUEST_CODE_ADD_EXERCISE); // Lanzar AddExerciseActivity esperando un resultado
+        });
+
+        FloatingActionButton fabDelete = findViewById(R.id.fabDelete);
+        fabDelete.setOnClickListener(view -> {
+            if (!filteredList.isEmpty()) {
+                // Eliminar el último ejercicio de la lista filtrada
+                int lastIndex = filteredList.size() - 1;
+                Exercise removedExercise = filteredList.remove(lastIndex);
+                adapter.notifyItemRemoved(lastIndex);
+
+                // También eliminar de la lista original si es necesario
+                exerciseList.remove(removedExercise);
+
+                // Mostrar Snackbar para deshacer
+                Snackbar.make(view, removedExercise.getName() + " eliminado", Snackbar.LENGTH_LONG)
+                        .setAction("Deshacer", undoView -> {
+                            // Restaurar el ejercicio eliminado
+                            filteredList.add(lastIndex, removedExercise);
+                            exerciseList.add(removedExercise);
+                            adapter.notifyItemInserted(lastIndex);
+                        })
+                        .show();
+            } else {
+                // Si no hay ejercicios, mostrar un mensaje
+                Snackbar.make(view, "No hay ejercicios para eliminar", Snackbar.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -154,7 +182,7 @@ public class ExerciseListActivity extends AppCompatActivity {
         }
     }
 
-    // Método para guardar la lista de ejercicios
+    /* Método para guardar la lista de ejercicios*/
     private void saveExercisesToPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("exercise_prefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();

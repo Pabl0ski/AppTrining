@@ -18,6 +18,7 @@
         <item>Avanzado</item>
     </string-array>
     <string name="add_exercise">Añadir ejercicio</string>
+    <string name="delete_exercise">Eliminar ejercicio</string>
 
 </resources>
 

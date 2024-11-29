@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+//Esta es la pagina que añade los ejercicios cuando le das al boton
+
 public class AddExerciseActivity extends AppCompatActivity {
 
     @Override
